@@ -1,5 +1,4 @@
-
-package ;
+package hxttpd;
 class Macro {
 
     macro public static function GetGitShortHead() 

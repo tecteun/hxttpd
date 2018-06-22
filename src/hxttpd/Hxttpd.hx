@@ -1,4 +1,4 @@
-package ;
+package hxttpd;
 
 import neko.Lib;
 import sys.net.Socket;

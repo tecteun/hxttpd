@@ -1,5 +1,5 @@
 package ;
-import Hxttpd;
+import hxttpd.Hxttpd;
 class Test {
     public function new() {
         trace("creating Hxttpd");
