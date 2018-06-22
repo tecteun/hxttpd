@@ -1,0 +1,11 @@
+{
+  "name": "hxttpd",
+  "url": "https://github.com/tecteun/hxttpd/",
+  "license": "MIT",
+  "classPath": "src",
+  "tags": ["sys", "http", "web", "server"],
+  "description": "Fast http(s) server!",
+  "releasenote": "",
+  "version": "1.0.0",
+  "contributors": ["tecteun"]
+}
