@@ -99,13 +99,15 @@ class Hxttpd extends ThreadServer<HxttpdClient, HxttpdMessage>
   override function clientConnected( s : Socket ) : HxttpdClient
   {
     var num = Std.random(100);
-    Lib.println("client " + num + " is " + s.peer());
+    if(debug)
+      Lib.println("client " + num + " is " + s.peer());
     return { id: num, sock: s };
   }
 
   override function clientDisconnected( c : HxttpdClient )
   {
-    Lib.println("client " + Std.string(c.id) + " disconnected");
+    if(debug)
+      Lib.println("client " + Std.string(c.id) + " disconnected");
   }
 
   override function readClientMessage(c:HxttpdClient, buf:Bytes, pos:Int, len:Int)
