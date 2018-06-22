@@ -317,6 +317,21 @@ class Hxttpd extends ThreadServer<HxttpdClient, HxttpdMessage>
       return ssl_client;
     }
   */
+
+  //fix for ssl
+  override function readClientData( c ) {
+    try{
+      super.readClientData(c);
+    } catch( e : Dynamic ) {
+      if(e == 'Blocking' || (Std.is(e, haxe.io.Error) && (
+              (e:haxe.io.Error).match(haxe.io.Error.Custom(haxe.io.Error.Blocked)) ||
+              (e:haxe.io.Error).match(haxe.io.Error.Blocked)))){
+          //ignore ssl read blocked (busy with handshake)
+      }else{
+        throw e;
+      }
+    }
+  }
   public static var status_codes:Map<Int, String> = [
     100 => "Continue",
     101 => "Switching Protocols",
