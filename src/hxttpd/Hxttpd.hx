@@ -205,14 +205,44 @@ class Hxttpd extends ThreadServer<HxttpdClient, HxttpdMessage>
       b.add(haxe.io.Bytes.ofString(response.toString()));
       if(responseBytes != null)
         b.add(responseBytes);
-      try{
-        c.sock.output.write(b.getBytes());
-      }catch(e:Dynamic){
-        if(debug){
-          Sys.println("=== WRITE ERROR ==="); 
-          Sys.println('Unable to write outgoing response : $e'); 
+      
+
+      c.sock.output.prepare(responseBytes.length);
+      /* ugly blocking mode:
+        try{
+          c.sock.setBlocking(true);
+          c.sock.output.write(b.getBytes());
+          c.sock.setBlocking(false);
+        }catch(e:Dynamic){
+          if(debug){
+            Sys.println("=== WRITE ERROR ==="); 
+            Sys.println('Unable to write outgoing response : $e'); 
+          }
+        }
+      */
+      var i = new haxe.io.BytesInput(b.getBytes());
+      var chunkSize = 4096;
+      while(true){
+        try{
+          c.sock.output.writeInput(i, chunkSize);
+          if(i.position == i.length)
+            break;
+        }catch(e:Dynamic){
+          if(e == 'Blocking' || (Std.is(e, haxe.io.Error) && (
+                  (e:haxe.io.Error).match(haxe.io.Error.Custom(haxe.io.Error.Blocked)) ||
+                  (e:haxe.io.Error).match(haxe.io.Error.Blocked)))){
+            //retry chunk
+            i.position -= chunkSize;
+            continue;
+          }else{
+            if(debug){
+              Sys.println("=== WRITE ERROR ==="); 
+              Sys.println('Unable to write outgoing response : $e'); 
+            } break;
+          }
         }
       }
+
       if(response.headers.get("Connection") == "close")
         this.stopClient(c.sock);
 
